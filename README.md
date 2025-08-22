@@ -1,15 +1,14 @@
-Heart-Disease-Prediction/
+Heart-Disease-Prediction
+
+file stucture
+
+├── app.py               
+├── cardio_train.csv     
+├──  index.html           
 │
-├── app.py               # Flask backend - ML model training + API for predictions
-├── cardio_train.csv     # Dataset used for training and testing
-├── index.html           # Frontend (Tailwind CSS + JS) for user inputs and results
-│
-├── templates/           # Flask template folder (needed if serving index.html via Flask)
-│   └── index.html       # Copy of index.html (Flask uses this path)
-│
-├── static/              # (Optional) For custom CSS/JS/images if needed
-│
-└── README.md            # Project documentation (overview, setup, usage)
+├── templates/           
+│   └── index.html 
+
 
 🚀 Features
 

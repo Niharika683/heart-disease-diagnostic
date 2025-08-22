@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Apply Inter font to the body */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light grey background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh; /* Full viewport height */
+            padding: 1rem; /* Padding around the main container */
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* Style for the range input (sliders) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2563eb; /* Blue thumb */
+            cursor: pointer;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #1d4ed8; /* Darker blue on hover */
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl border border-gray-200">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Heart Disease Prediction</h1>
+
+        <!-- User ID display (useful for potential future backend integration/multi-user features) -->
+        <div id="userIdDisplay" class="text-sm text-gray-600 text-right mb-4"></div>
+
+        <!-- Input Form Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Age Input -->
+            <div>
+                <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age (years):</label>
+                <input type="range" id="age" min="18" max="100" value="18"
+                       class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer">
+                <span id="ageValue" class="text-sm text-gray-600 mt-1 block text-right">18</span>
+            </div>
+            <!-- Gender Input -->
+            <div>
+                <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender:</label>
+                <select id="gender" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+                    <option value="1">Female</option>
+                    <option value="2">Male</option>
+                </select>
+            </div>
+            <!-- Height Input -->
+            <div>
+                <label for="height" class="block text-sm font-medium text-gray-700 mb-1">Height (cm):</label>
+                <input type="range" id="height" min="100" max="220" value="100"
+                       class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer">
+                <span id="heightValue" class="text-sm text-gray-600 mt-1 block text-right">100</span>
+            </div>
+            <!-- Weight Input -->
+            <div>
+                <label for="weight" class="block text-sm font-medium text-gray-700 mb-1">Weight (kg):</label>
+                <input type="range" id="weight" min="30" max="200" step="0.1" value="30.0"
+                       class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer">
+                <span id="weightValue" class="text-sm text-gray-600 mt-1 block text-right">30.0</span>
+            </div>
+            <!-- Systolic BP Input (AP_HI) -->
+            <div>
+                <label for="ap_hi" class="block text-sm font-medium text-gray-700 mb-1">Systolic BP (mm Hg):</label>
+                <input type="range" id="ap_hi" min="80" max="200" value="80"
+                       class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer">
+                <span id="ap_hiValue" class="text-sm text-gray-600 mt-1 block text-right">80</span>
+            </div>
+            <!-- Diastolic BP Input (AP_LO) -->
+            <div>
+                <label for="ap_lo" class="block text-sm font-medium text-gray-700 mb-1">Diastolic BP (mm Hg):</label>
+                <input type="range" id="ap_lo" min="60" max="150" value="60"
+                       class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer">
+                <span id="ap_loValue" class="text-sm text-gray-600 mt-1 block text-right">60</span>
+            </div>
+            <!-- Cholesterol Input -->
+            <div>
+                <label for="cholesterol" class="block text-sm font-medium text-gray-700 mb-1">Cholesterol:</label>
+                <select id="cholesterol" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+                    <option value="1" selected>Normal (1)</option>
+                    <option value="2">Above Normal (2)</option>
+                    <option value="3">Well Above Normal (3)</option>
+                </select>
+            </div>
+            <!-- Glucose Input -->
+            <div>
+                <label for="gluc" class="block text-sm font-medium text-gray-700 mb-1">Glucose:</label>
+                <select id="gluc" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+                    <option value="1" selected>Normal (1)</option>
+                    <option value="2">Above Normal (2)</option>
+                    <option value="3">Well Above Normal (3)</option>
+                </select>
+            </div>
+            <!-- Smoke Input -->
+            <div>
+                <label for="smoke" class="block text-sm font-medium text-gray-700 mb-1">Smoke:</label>
+                <select id="smoke" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+                    <option value="0" selected>No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <!-- Alcohol Input -->
+            <div>
+                <label for="alco" class="block text-sm font-medium text-gray-700 mb-1">Alcohol:</label>
+                <select id="alco" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+                    <option value="0" selected>No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <!-- Physical Activity Input -->
+            <div>
+                <label for="active" class="block text-sm font-medium text-gray-700 mb-1">Physical Activity:</label>
+                <select id="active" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+                    <option value="1" selected>Active</option>
+                    <option value="0">Inactive</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Predict Button -->
+        <button id="predictButton"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+            Predict Heart Disease
+        </button>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="mt-4 text-center text-gray-600 hidden">
+            <svg class="animate-spin h-5 w-5 mr-3 text-blue-500 inline-block" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Predicting...
+        </div>
+
+        <!-- Results Display Area -->
+        <div id="results" class="mt-8 p-6 bg-gray-50 rounded-xl border border-gray-200 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Diagnosis Report</h2>
+            <div id="predictionResult" class="text-xl font-medium mb-2"></div>
+            <div id="confidence" class="text-lg text-gray-700 mb-4"></div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Key Risk Factors:</h3>
+            <ul id="riskFactors" class="list-disc list-inside text-gray-700 mb-4"></ul>
+            <!-- New section for the risk factors graph -->
+            <div id="riskFactorsGraphContainer" class="mt-6 text-center">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Risk Factors Visualization:</h3>
+                <img id="riskFactorsGraph" class="mx-auto border border-gray-300 rounded-lg shadow-md" alt="Risk Factors Graph">
+            </div>
+            <div id="recommendations" class="text-md text-gray-700 whitespace-pre-wrap mt-6"></div>
+        </div>
+
+        <!-- Custom Modal for Alerts (replaces window.alert) -->
+        <div id="customAlertModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Alert</h3>
+                <p id="customAlertMessage" class="text-gray-700 mb-4"></p>
+                <button id="customAlertClose" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Utility Functions ---
+
+        /**
+         * Displays a custom alert modal instead of browser's alert.
+         * @param {string} message - The message to display in the alert.
+         */
+        function customAlert(message) {
+            document.getElementById('customAlertMessage').innerText = message;
+            document.getElementById('customAlertModal').classList.remove('hidden');
+        }
+
+        // Event listener for closing the custom alert
+        document.getElementById('customAlertClose').addEventListener('click', function() {
+            document.getElementById('customAlertModal').classList.add('hidden');
+        });
+
+        // --- User ID Initialization ---
+        /**
+         * Generates a unique user ID, leveraging __app_id if available (for Canvas environment).
+         * This ID is for demonstration purposes within this application's context.
+         */
+        const userId = typeof __app_id !== 'undefined' ? `${__app_id}-${crypto.randomUUID()}` : `default-user-${crypto.randomUUID()}`;
+        document.getElementById('userIdDisplay').innerText = `User ID: ${userId}`;
+
+        // --- Slider Value Synchronization ---
+        /**
+         * Attaches event listeners to all range input elements to update their displayed value.
+         * Ensures float values (like weight) are formatted correctly.
+         */
+        document.getElementById('age').addEventListener('input', function() {
+            document.getElementById('ageValue').innerText = this.value;
+        });
+        document.getElementById('height').addEventListener('input', function() {
+            document.getElementById('heightValue').innerText = this.value;
+        });
+        document.getElementById('weight').addEventListener('input', function() {
+            // Ensure weight displays with one decimal place
+            document.getElementById('weightValue').innerText = parseFloat(this.value).toFixed(1);
+        });
+        document.getElementById('ap_hi').addEventListener('input', function() {
+            document.getElementById('ap_hiValue').innerText = this.value;
+        });
+        document.getElementById('ap_lo').addEventListener('input', function() {
+            document.getElementById('ap_loValue').innerText = this.value;
+        });
+
+        // --- Initial Slider Value Setup ---
+        /**
+         * Manually trigger input event for sliders on page load to display initial values.
+         */
+        window.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('age').dispatchEvent(new Event('input'));
+            document.getElementById('height').dispatchEvent(new Event('input'));
+            document.getElementById('weight').dispatchEvent(new Event('input'));
+            document.getElementById('ap_hi').dispatchEvent(new Event('input'));
+            document.getElementById('ap_lo').dispatchEvent(new Event('input'));
+        });
+
+
+        // --- Main Prediction Logic ---
+        // Event listener for the "Predict Heart Disease" button
+        document.getElementById('predictButton').addEventListener('click', predictHeartDisease);
+
+        /**
+         * Gathers user input and sends it to the Flask backend for heart disease prediction.
+         * Handles loading state, API calls, error reporting, and result display with scrolling.
+         */
+        async function predictHeartDisease() {
+            // Show loading indicator and hide previous results
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+
+            // 1. Get input values from the form elements
+            const age = parseInt(document.getElementById('age').value);
+            const gender = parseInt(document.getElementById('gender').value); // 1=female, 2=male
+            const height = parseInt(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const ap_hi = parseInt(document.getElementById('ap_hi').value); // Systolic BP
+            const ap_lo = parseInt(document.getElementById('ap_lo').value); // Diastolic BP
+            const cholesterol = parseInt(document.getElementById('cholesterol').value); // 1=normal, 2=above normal, 3=well above normal
+            const gluc = parseInt(document.getElementById('gluc').value); // 1=normal, 2=above normal, 3=well above normal
+            const smoke = parseInt(document.getElementById('smoke').value); // 0=no, 1=yes
+            const alco = parseInt(document.getElementById('alco').value); // 0=no, 1=yes
+            const active = parseInt(document.getElementById('active').value); // 0=inactive, 1=active
+
+            // 2. Basic Input Validation (client-side for immediate feedback)
+            if (ap_lo >= ap_hi) {
+                customAlert("Diastolic Blood Pressure (AP_LO) cannot be greater than or equal to Systolic Blood Pressure (AP_HI). Please adjust.");
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                return; // Stop execution if validation fails
+            }
+
+            // 3. Prepare data for API request
+            const patientData = {
+                age: age,
+                gender: gender,
+                height: height,
+                weight: weight,
+                ap_hi: ap_hi,
+                ap_lo: ap_lo,
+                cholesterol: cholesterol,
+                gluc: gluc,
+                smoke: smoke,
+                alco: alco,
+                active: active
+            };
+
+            try {
+                // 4. Make API call to the Flask backend
+                // Specify the full URL to your Flask backend (adjust if your Flask app is on a different IP/port)
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(patientData),
+                });
+
+                // 5. Check if the response was successful
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        errorMessage = errorData.error || errorMessage;
+                    } catch (e) {
+                        errorMessage = `Server responded with status ${response.status}: ${errorText}`;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                // 6. Parse the JSON response
+                const result = await response.json();
+
+                // 7. Display results in the UI
+                const resultsDiv = document.getElementById('results');
+                const predictionResultDiv = document.getElementById('predictionResult');
+                const confidenceDiv = document.getElementById('confidence');
+                const riskFactorsList = document.getElementById('riskFactors');
+                const recommendationsDiv = document.getElementById('recommendations');
+                const riskFactorsGraph = document.getElementById('riskFactorsGraph');
+
+                // Clear previous results
+                riskFactorsList.innerHTML = '';
+                recommendationsDiv.innerText = '';
+                riskFactorsGraph.src = ''; // Clear previous image
+
+                // Set prediction text and color based on risk level
+                predictionResultDiv.className = `text-xl font-medium mb-2 ${result.prediction.includes('High') ? 'text-red-600' : result.prediction.includes('Moderate') ? 'text-orange-600' : 'text-green-600'}`;
+                predictionResultDiv.innerText = `Prediction: ${result.prediction}`;
+                confidenceDiv.innerText = `Confidence: ${result.confidence}`;
+
+                // Populate risk factors list
+                if (result.risk_factors && result.risk_factors.length > 0) {
+                    result.risk_factors.forEach(factor => {
+                        const li = document.createElement('li');
+                        li.innerText = factor;
+                        riskFactorsList.appendChild(li);
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.innerText = 'No significant risk factors identified.';
+                    riskFactorsList.appendChild(li);
+                }
+
+                // Set recommendations
+                recommendationsDiv.innerText = result.recommendations;
+
+                // Display the risk factors graph if available
+                if (result.risk_factors_graph) {
+                    riskFactorsGraph.src = `data:image/png;base64,${result.risk_factors_graph}`;
+                    document.getElementById('riskFactorsGraphContainer').classList.remove('hidden');
+                } else {
+                    document.getElementById('riskFactorsGraphContainer').classList.add('hidden');
+                }
+
+                // Show the results section
+                resultsDiv.classList.remove('hidden');
+
+                // --- Auto-scroll to results section ---
+                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            } catch (error) {
+                console.error('Prediction failed:', error);
+                customAlert(`Prediction failed: ${error.message}. Please try again.`);
+            } finally {
+                // Hide loading indicator regardless of success or failure
+                document.getElementById('loadingIndicator').classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
